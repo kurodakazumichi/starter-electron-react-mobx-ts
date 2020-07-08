@@ -162,4 +162,27 @@ globalオブジェクトのプロパティを設定するとレンダラープ�
     }
   })
 ```
+---
 
+# typescriptで__staticを使う
+
+- __static は staticディレクトリのパスを提供する環境変数
+- tsの場合、`declare const __static: string;`を定義する必要あり
+
+```
+import fs from 'fs'
+import path from 'path'
+
+/* use `path` to create the full path to our asset */
+const pathToAsset = path.join(__static, '/foobar.txt')
+
+/* use `fs` to consume the path and read our asset */
+const fileContents = fs.readFileSync(pathToAsset, 'utf8')
+
+console.log(fileContents)
+```
+
+---
+
+- react-router-dom
+---
