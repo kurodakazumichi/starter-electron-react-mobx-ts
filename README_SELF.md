@@ -181,8 +181,3 @@ const fileContents = fs.readFileSync(pathToAsset, 'utf8')
 
 console.log(fileContents)
 ```
-
----
-
-- react-router-dom
----

@@ -11,15 +11,19 @@ let mainWindow
 
 function createMainWindow() {
 
-  
   const preloadPath = (isDevelopment)
     ? "../../dist/main/preload.js"
     : "preload.js";
 
   const window = new BrowserWindow({
     webPreferences: {
+      // レンダラープロセスで Node.js 使えないようにする (XSS対策)
+      // electron-webpackではtrue前提なのでtrue
       nodeIntegration: true,
+      // preloadスクリプトを, レンダラープロセスとは別のJavaScriptコンテキストで実行するかどうか
+      // false にしないと、window object を共有できないのでfalse
       contextIsolation: false,
+      // preload.jsのpathを指定(絶対パスじゃないと動かなかった)
       preload: path.resolve(__dirname, preloadPath)
     }
   })

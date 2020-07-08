@@ -6,7 +6,7 @@ import { observable, computed, action  } from 'mobx';
 import { observer } from 'mobx-react';
 import './reset.css';
 import './styles.scss';
-
+import window from '@/types/window';
 class Store {
   @observable private _count = 0;
 
@@ -56,7 +56,8 @@ class App extends React.Component {
       <div>
         <h1>hello electron webpack</h1>
         <p>
-          「{(window as any).test()}」は static/foobar.txt に書かれている内容です。
+          「{window.core.test()}」はpreloadによって設定されました。
+          {__static}
         </p>
         <Router>
           <Switch>

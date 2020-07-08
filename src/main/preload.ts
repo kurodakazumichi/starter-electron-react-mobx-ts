@@ -1,17 +1,10 @@
-import electron from 'electron';
-import fs from 'fs';
-import path from 'path';
+import Core from './core';
+import global from './types/global';
 
 process.once('loaded', () => {
 
   console.log('---- preload.js loaded ts ----');
   // globalに入れるとwindowオブジェクトのプロパティに設定される
-  (global as any).electron = electron;
-  (global as any).module   = module;
-  (global as any).test     = () => {
-    const pathToAsset = path.join(__static, '/foobar.txt');
-    const fileContents = fs.readFileSync(pathToAsset, 'utf8');
-    return fileContents;
-  }
-  
+  global.core = Core;
+
 });
