@@ -81,3 +81,85 @@ electron-webpackが望む事
 - それぞれにエントリーポイントとなるファイルがある事
   - index.js or main.js
   - index.ts or main.ts (TypeScriptの場合)
+
+---
+
+electron-webpackをtypescriptにすると`yarn dev`した時に下記のエラーがでる
+
+ERROR in D:/Works/nodejs/Electrons/electron-webpack-quick-start/node_modules/electronelectron.d.ts(7545,22):
+TS2689: Cannot extend an interface 'NodeJS.EventEmitter'. Did you mean 'implements'?
+
+@types/nodeの12->13の際にEventEmitterがclassからinterfaceに変更されたことが原因らしい
+ということで12系の @types/node をインストールする
+
+`yarn add -D @types/node@12.6.9`
+
+--- 
+
+# nodeIntegrationの設定
+https://gist.github.com/earksiinni/053470a04defc6d7dfaacd5e5a073b15
+
+electron-webpackの現在のバージョン(2019-02-02現在)では、BrowserWindowのインスタンスがnodeIntegration: trueになっていることを前提に設定されています。
+
+しかし、Electronではセキュリティ上の注意としてnodeIntegration: falseを設定することを推奨しており、将来的にはBrowserWindowでもデフォルトでfalseに設定されるようになります。
+
+---
+
+現在、Electron-webpackでこれを行うと、index.htmlテンプレートにcommonjsのrequireがハードワイヤードされているため、エラーがスローされます（nodeIntegration: trueでのみ動作します）。
+
+さらに、レンダラースクリプトはwebpackによってcommonjsをライブラリターゲットとして使用して構築されており、nodeIntegration: trueを使用していないブラウザでもエラーが発生します。
+
+---
+
+# preload.tsを動作させるには
+
+package.jsonに "extraEntries": ["@/preload.ts"] を追加
+
+```
+  "electronWebpack": {
+    "main": {
+      "extraEntries": ["@/preload.ts"]
+    }
+  }
+```
+
+---
+
+## src/main/preload.ts
+
+```
+const electron = require('electron');
+
+process.once('loaded', () => {
+  console.log('---- preload.js loaded ts ----');
+  // globalに入れるとwindowオブジェクトのプロパティに設定される
+  (global as any).electron = electron;
+  (global as any).module   = module;
+});
+```
+
+globalオブジェクトのプロパティを設定するとレンダラープロセスのwindowオブジェクトのプロパティとして使えるようになる。
+
+---
+
+## src/main/index.ts
+
+```
+  const preloadPath = (isDevelopment)
+    ? "../../dist/main/preload.js"
+    : "preload.js";
+
+  const window = new BrowserWindow({
+    webPreferences: {
+      // レンダラープロセスで Node.js 使えないようにする (XSS対策)
+      // electron-webpackではtrue前提なのでtrue
+      nodeIntegration: true,
+      // preloadスクリプトを, レンダラープロセスとは別のJavaScriptコンテキストで実行するかどうか
+      // false にしないと、window object を共有できないのでfalse
+      contextIsolation: false,
+      // preload.jsのpathを指定、絶対パスじゃないと動かなかった
+      preload: path.resolve(__dirname, preloadPath)
+    }
+  })
+```
+
