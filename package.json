@@ -9,13 +9,17 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.2.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.10.4",
     "@types/node": "12.6.9",
+    "@types/react-router-dom": "^5.1.5",
     "electron": "8.2.0",
     "electron-builder": "^22.4.1",
     "electron-webpack": "^2.8.2",
@@ -27,7 +31,9 @@
   },
   "electronWebpack": {
     "main": {
-      "extraEntries": ["@/preload.ts"]
+      "extraEntries": [
+        "@/preload.ts"
+      ]
     }
   }
 }
