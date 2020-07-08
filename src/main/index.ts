@@ -10,7 +10,19 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let mainWindow
 
 function createMainWindow() {
-  const window = new BrowserWindow({webPreferences: {nodeIntegration: true}})
+
+  
+  const preloadPath = (isDevelopment)
+    ? "../../dist/main/preload.js"
+    : "preload.js";
+
+  const window = new BrowserWindow({
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      preload: path.resolve(__dirname, preloadPath)
+    }
+  })
 
   if (isDevelopment) {
     window.webContents.openDevTools()

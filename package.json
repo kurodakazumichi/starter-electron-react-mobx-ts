@@ -24,5 +24,10 @@
     "sass-loader": "^9.0.2",
     "typescript": "^3.9.6",
     "webpack": "~4.42.1"
+  },
+  "electronWebpack": {
+    "main": {
+      "extraEntries": ["@/preload.ts"]
+    }
   }
 }
